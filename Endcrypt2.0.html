@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!--
+    Written by Dragon of Shuu#1119 on Discord!
+    Thanks to Abi Wasabee#5393 for testing!
+
+    This is the new version of my encryptor! To whomever reads this, use
+    this encryptor with caution. If server mods were to see this, they
+    would probably think you were spamming! xD
+-->
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Endcrypt 2.0</title>
+    </head>
+    <style>
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            transition: background-color;
+            transition-duration: 2s;
+        }
+
+        h2 {
+            animation-name: title;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+            font-size: 3em;
+            padding: 0;
+            margin: 5px;
+        }
+
+        @keyframes title {
+            from {color: darkviolet; text-shadow: 0px 0px 4px darkviolet;}
+            to {color: rgb(160, 67, 201); text-shadow: 0px 0px 2px rgb(160, 67, 201);}
+        }
+
+        .smalltext {
+            font-size: 0.1em;
+            color: white;
+        }
+
+        body:hover {
+            border-color: blue;
+        }
+
+        button {
+            display: block;
+            border-radius: 10px;
+            font-size: 1.2em;
+            border-style: solid;
+            border-color: darkviolet;
+            box-shadow: 0px 0px 5px white;
+            color: white;
+            padding: 10px;
+            background: linear-gradient(
+                150deg, 
+                rgba(0, 0, 0, 0) 44%,
+                rgba(255, 255, 255, 0.1) 45%,
+                rgba(10, 10, 10, 0) 85%
+            );
+            background-color: rgb(179, 28, 179);
+            transition: background-color, 1s;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: rgb(219, 41, 219);
+        }
+
+        button.controls {
+            background-color: rgb(84, 165, 138);
+            border-color: rgb(144, 248, 215);
+            display: inline-block;
+        }
+        
+        button.controls:hover {
+            background-color: rgb(110, 190, 164);
+        }
+
+        textarea {
+            border-radius: 5px;
+            padding: 5px;
+            transition: box-shadow, border-color;
+            transition-duration: 1s;
+            outline: none;
+            box-shadow: none;
+        }
+
+        textarea:focus {
+            border-width: 3px;
+            border-color: blue;
+            box-shadow: 0px 0px 10px white;
+        }
+
+        textarea:hover {
+            border-width: 3px;
+            border-color: aquamarine;
+            box-shadow: 0px 0px 8px white;
+        }
+
+        div.mainControlSet {
+            background-color: none;
+            padding: 5px 0px;
+        }
+
+        div.main {
+            margin: 20px 10px;
+            display: block;
+        }
+
+        #warning {
+            border-color: rgb(153, 44, 44);
+            border-radius: 5px;
+            border-width: 2px;
+            border-style: solid;
+            background-color: rgb(197, 95, 95);
+            margin: 10px 0px;
+            padding: 5px;
+            float: left;
+            color: rgb(247, 168, 168);
+            visibility: hidden;
+        }
+
+        #paragraphWarning {
+            display: inline;
+        }
+
+        input {
+            resize: none;
+            box-shadow: 0px 0px 4px white;
+            border-radius: 2px;
+            border-style: solid;
+            outline: none;
+            transition: box-shadow, border-radius;
+            transition-duration: 1s;
+        }
+
+        input:hover {
+            box-shadow: 0px 0px 3px aquamarine;
+            border-radius: 4px;
+        }
+
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+        -moz-appearance: textfield;
+        }
+
+        #key {
+            vertical-align: middle;
+        }
+
+        #KEY:invalid {
+            border-color: red !important;
+            box-shadow: 0px 0px 30px red !important;
+        }
+
+    </style>
+    <body>
+        <h1 class="smalltext">Version 2.0.2</h1>
+        <div class="main">
+            <h2>Endcrypt</h2>
+            <div style="padding: 5px 0px;">
+                <button id="encryptType" onclick="toggleMode()">Encrypt Mode</button>
+            </div>
+            <div style="padding: 5px 0px;">
+                <button class="controls" onclick="clearBoxes()">Clear</button>
+                <button class="controls" onclick="switchBoxes()">Switch</button>
+                <button class="controls" onclick="switchAndExec()">Switch & Exec</button>
+            </div>
+            <textarea id="input" cols="30" rows="10" placeholder="Input..." autofocus></textarea>
+            <div class="mainControlSet">
+                <button class="controls" onclick="EXECUTE()">Execute</button>
+                <p style="vertical-align: middle; display: inline;padding: 0px 15px; color: white; text-shadow: 0px 0px 4px white;"><b>Key:</b></p>
+                <input id="KEY" max="9999" type="number" value="0000" style="width: 45px;" title="Key: This must be 4 digits long. Any number is accepted." onfocusout="keyLoseFocus()" />
+            </div>
+            <textarea id="output" cols="30" rows="10" placeholder="Output..." readonly></textarea>
+            <hr style="visibility: hidden; padding: 0; margin: 0;"/>
+            <div id="warning">
+                <p id="paragraphWarning">ERROR: "sus" is not defined</p>
+            </div>
+        </div>
+        
+    </body>
+    <script>
+        function toggleMode() {
+            //console.log("toggle ran");
+            let button = document.getElementById("encryptType");
+            if (button.innerHTML == "Encrypt Mode") {
+                //console.log("Set to decrypt");
+                button.innerHTML = "Decrypt Mode";
+            } else {
+                //console.log("Set to encrypt");
+                button.innerHTML = "Encrypt Mode";
+            }
+        }
+
+        function clearBoxes() {
+            document.getElementById("input").value = "";
+            document.getElementById("output").value = "";
+            return true;
+        }
+
+        function CopyToClipboard(input) {
+            try {
+                input.select();
+                input.setSelectionRange(0, 99999);
+                document.execCommand("copy");
+                navigator.clipboard.writeText(input.value);
+                return true;
+            } catch (e) {
+                console.log(`An error has occurred: ${e}`);
+                return false;
+            }
+        }
+
+        function switchBoxes() {
+            let input = document.getElementById("input");
+            let output = document.getElementById("output");
+            let inputContent = document.getElementById("input").value;
+            let outputContent = document.getElementById("output").value;
+
+            input.value = outputContent;
+            output.value = inputContent;
+            return true;
+        }
+
+        function setOutput(value) {
+            let output = document.getElementById("output");
+
+            output.value = value;
+            return true;
+        }
+
+        function randNum(min = 0, max = 10) {
+            let num = Math.random() * (max - min) + min;
+
+            return Math.floor(num);
+        }
+
+        function cipher(iterated, chars = "abcdefghijklmnopqrstuvwxyz ", count = 4) {
+            var ciphered = "";
+            for (let i = 0; i < iterated.length; i++) {
+                // sus
+                var data;
+                if (chars.includes(iterated[i])) {
+                    // --- Code is Written Like This For Readability ---
+                    // Find the index of the character in the list of chracters
+                    data = chars.indexOf(iterated[i]);
+                    // Accelerate the index by the count
+                    data = data+count;
+                    // Puts the data within scope using modulus
+                    data = data % chars.length
+                    // If it is negative, it adds it to the length of the characters, if it is even, it applies the index right away
+                    if (data < 0) {
+                        ciphered += chars[chars.length + data]
+                    } else {
+                        ciphered += chars[data]
+                    }
+                } else {
+                    ciphered += iterated[i];
+                }
+            }
+            return ciphered;
+        }
+
+        function breakKey(key) {
+            try {
+                //console.log(key);
+                try {
+                    key = key.toString();
+                    let Number1 = key[0] + key[1];
+                    let Number2 = key[2] + key[3];
+                    return [parseInt(Number1), parseInt(Number2)];
+                } catch (e) {
+                    makeWarning(e);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        function reverseString(text) {
+            let newText = "";
+            for (let i = 0; i < text.length; i++) {
+                const element = text[i];
+                newText = element + newText;
+            }
+
+            return newText;
+        }
+
+        function Encrypt(input, output, key) {
+            try {
+                let inputValue = input.value;
+                let outputValue = output.value;
+
+                inputValue = inputValue.toLowerCase()
+
+                // Break Down Key
+                let [key1, key2] = breakKey(key);
+                inputValue = reverseString(inputValue);
+
+                const ABCs = "abcdefghijklmnopqrstuvwxyz";
+
+                let newCharacters = "";
+                let newABCs = ABCs;
+                for (let i = 0; i < inputValue.length; i++) {
+                    const el = inputValue[i];
+                    if (!ABCs.includes(el) && !newCharacters.includes(el)) {
+                        newCharacters += el;
+                    } else {
+                        try {
+                            newABCs = newABCs.replace(el, "");
+                            //console.log(el);
+                            //console.log("The now new Abcs: " + newABCs);
+                        } catch {
+                            console.log("SomEthInG wENt WronG")
+                        }
+                    }
+
+                    // Prevent "NaN"'s
+                    if (i % 16 == 0 && i != 64) {
+                        newABCs += ABCs
+                    }
+                }
+                
+                const allChars = ABCs + newCharacters;
+                newABCs += newCharacters;
+
+                inputValue = cipher(inputValue, ABCs, key1);
+
+                // Main Algorithm (Ironically)
+                let newinput = "";
+                for (let i = 0; i < inputValue.length; i++) {
+                    const element = inputValue[i];
+                    newinput += newABCs[randNum(0, newABCs.length)] + newABCs[randNum(0, newABCs.length)] + element;
+                }
+
+                inputValue = newinput;
+                inputValue = cipher(inputValue, ABCs, key2);
+                
+                inputValue = inputValue.replaceAll(" ", "~");
+
+                setOutput(inputValue);
+                CopyToClipboard(output)
+                return true;
+            } catch (e) {
+                return e;
+            }
+        }
+
+        function Decrypt(input, output, key) {
+            try {
+                let inputValue = input.value;
+                let outputValue = output.value;
+                const ABCs = "abcdefghijklmnopqrstuvwxyz";
+
+                inputValue = inputValue.replaceAll("~", " ");
+
+                let [key1, key2] = breakKey(key);
+                inputValue = cipher(inputValue, ABCs, key2*-1);
+
+                inputValue = reverseString(inputValue);
+
+                let newInputValue = "";
+                for (let i = 0; i < inputValue.length; i++) {
+                    const el = inputValue[i];
+                    if (i % 3 == 0) {
+                        newInputValue += el;
+                    }
+                }
+
+                newInputValue = cipher(newInputValue, ABCs, key1*-1);
+
+                setOutput(newInputValue);
+                CopyToClipboard(output)
+                return true;
+            } catch (e) {
+                return e;
+            }
+        }
+
+        function makeWarning(e) {
+            WarningDivider = document.getElementById("warning");
+            WarningParagraph = document.getElementById("paragraphWarning");
+
+            WarningParagraph.innerHTML = "Error: ".concat(e);
+            WarningDivider.style.visibility = "visible";
+
+            WarningDivider.style.backgroundColor = "rgb(197, 95, 95)";
+            WarningDivider.style.borderColor = "rgb(153, 44, 44)";
+        }
+
+        function makeGWarning(g) {
+            WarningDivider = document.getElementById("warning")
+            WarningParagraph = document.getElementById("paragraphWarning")
+
+            WarningParagraph.innerHTML = g;
+            WarningDivider.style.visibility = "visible";
+
+            // WarningDivider.style.backgroundColor = "#aaffaa";
+            // WarningDivider.style.borderColor = "#00bb00";
+            // document.getElementById("paragraphWarning").style.color = "#66ff66";
+
+            setTimeout(() => {
+                WarningDivider.style.visibility = "hidden";
+            }, 5000);
+        }
+
+        function destroyWarning() {
+            let WarningDivider = document.getElementById("warning");
+
+            WarningDivider.style.visibility = "hidden";
+        }
+
+        function EXECUTE() {
+            let button = document.getElementById("encryptType");
+            let input = document.getElementById("input");
+            let output = document.getElementById("output");
+            let key = document.getElementById("KEY").value;
+
+            if (document.activeElement == document.getElementById("KEY")) {
+                keyLoseFocus();
+                key = document.getElementById("KEY").value;
+            } 
+
+            output.focus();
+            let Result = false;
+
+            if (button.innerHTML == "Encrypt Mode") {
+                Result = Encrypt(input, output, key);
+                //Result = setOutput(cipher(input.value, "abcdefghijklmnopqrstuvwxyz", -1));
+            } else {
+                Result = Decrypt(input, output, key);
+            }
+            
+            if (Result !== true) {
+                makeWarning(Result);
+            } else {
+                makeGWarning("Copied!");
+                setTimeout(() => {
+                    input.focus();
+                }, 1);
+            }
+        }
+
+        function switchAndExec() {
+            switchBoxes();
+            EXECUTE();
+        }
+
+        function keyLoseFocus() {
+            const key = document.getElementById("KEY");
+
+            if (key.value.length < 4) {
+                var newKey = key.value;
+                for (let i = 0; i < (4-key.value.length); i++) {
+                    newKey += 0;
+                }
+                key.value = newKey;
+            } else if (key.value.length > 4) {
+                key.value = "0000";
+            }
+        }
+
+        document.body.addEventListener("keydown", (event) => {
+            var input = document.getElementById("input");
+            var key = document.getElementById("KEY");
+            
+            // Alt Keys
+            if (event.altKey) {
+                if (event.code == "KeyC") {
+                    clearBoxes();
+                    return;
+                } else if (event.code == "KeyS") {
+                    switchBoxes();
+                    return;
+                } else if (event.code == "KeyQ") {
+                    switchAndExec();
+                    return;
+                } else if (event.code == "KeyT") {
+                    toggleMode();
+                    return;
+                } else if (event.code == "KeyK") {
+                    key.select();
+                    key.focus();
+                    return;
+                }
+            }
+
+            // Enter Key
+            if (event.code == "Enter") {
+                EXECUTE();
+                return;
+            } 
+
+            // Ctrl Key
+            if (event.ctrlKey) { return }
+            
+            // Everything Else
+            if (input != document.activeElement && 
+            key != document.activeElement) {
+                input.focus();
+            } 
+        });
+    </script>
+</html>

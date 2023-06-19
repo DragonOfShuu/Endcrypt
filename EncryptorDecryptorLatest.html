@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Endcrypt
+        </title>
+        <meta name="keywords" content="Endcrypt, Encryption, Decryption, tool">
+        <meta name="author" content="MushroomEnder">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        div.main {
+            padding-left: 10px;
+        }
+
+        h1 {
+            color: darkblue;
+            animation-name: titleColor;
+            animation-duration: 2s;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes titleColor {
+            0% {color: darkblue};
+            50% {color: violet};
+            0% {color: darkblue};
+        }
+
+        h1, h2, h3, h4, h5, h6, p {
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .input {
+            padding: 5px 5px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .output {
+            padding: 5px 5px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .tinyText {
+            font-size: 0.2em;
+        }
+
+        button {
+            display: inline;
+            border-radius: 10px;
+            border-style: solid;
+            padding: 10px;
+            background: linear-gradient(150deg, rgba(0,0,0,0) 44%, rgba(255,255,255,0.1) 45%, rgba(10,10,10,0) 85%);
+            background-color: green;
+            border-color: darkgreen;
+            transition: background-color 0.5s, border-color 0.5s;
+            color: white;
+        }
+
+        button:hover {
+            background-color: rgb(60, 172, 60);
+            border-color: rgb(21, 133, 21);
+            cursor: pointer;
+        }
+
+        button:active {
+            background-color: rgb(0, 43, 0);
+        }
+
+        button.EncButton {
+            background-color: rgb(57, 57, 151);
+            border-color: rgb(0, 0, 179);
+        }
+
+        button.EncButton:hover {
+            background-color: rgb(94, 94, 255);
+            border-color: rgb(85, 85, 156);
+        }
+
+        button.DecButton {
+            background-color: rgb(112, 58, 112);
+            border-color: rgb(160, 0, 179);
+        }
+
+        button.DecButton:hover {
+            background-color: rgb(172, 73, 172);
+            border-color: rgb(183, 52, 197);
+        }
+
+        textarea {
+            border-radius: 6px;
+            border-width: 1px;
+            margin: 20px 0px;
+            width: 25%;
+            height: 100px;
+        }
+
+        textarea:hover {
+            border-color: blue;
+            border-width: 2px;
+        }
+
+        textarea:focus {
+            border-color: darkgreen;
+            border-width: 2px;
+        }
+
+    </style>
+    <body>
+        <p class="tinyText">Version 1.1</p>
+        <div class="main">
+            <h1>Endcrypt</h1>
+
+            <!--<select name="EncType" id="EncType">
+                <option value="none">Choose...</option>
+                <option value="Encryption">Encrypt</option>
+                <option value="Decryption">Decrypt</option>
+            </select>-->
+
+            <button onclick="EncryptTypeFunc()" id="EncType" class="EncButton">Encrypt Mode</button>
+
+            <br>
+            <textarea id="InputID" class="input" placeholder="Input..."></textarea>
+            <br>
+            <button onclick="DeleteBoxes()"> Clear </button>
+            <button onclick="Execute()" class="EncButton" id="ExecButton"> Execute </button>
+            <button onclick="Switch()"> Switch </button>
+            <br>
+            <textarea class="output" id="OutputID" placeholder="Output..." readonly></textarea>
+        </div>
+    </body>
+    <script>
+        function randNum(min = 0, max = 10) {
+            let num = Math.random() * (max - min) + min;
+
+            return Math.floor(num);
+        }
+        function DeleteBoxes() {
+            document.getElementById("InputID").value = "";
+            document.getElementById("OutputID").value = "";
+        }
+        function Switch() {
+            input = document.getElementById("InputID").value;
+            output = document.getElementById("OutputID").value;
+
+            document.getElementById("InputID").value = output;
+            document.getElementById("OutputID").value = input;
+        }
+
+        function reversal(text) {
+            let newText1 = "";
+            for (let i = 0; i < text.length; i++) {
+                newText1 += text[text.length-(i+1)];
+            }
+            return newText1;
+        }
+
+        function EncryptFunc(input, output) {
+            //console.log("ran encrypt")
+            input = input.value.toLowerCase();
+            reversed = reversal(input);
+            baseAlphabet = "abcdefghijklmnopqrstuvwxyz,.";
+            for (let i=0; i<reversed.length; i++) {
+                if (!baseAlphabet.includes(reversed[i])) {
+                    baseAlphabet += reversed[i];
+                }
+            }
+            alphabet = baseAlphabet;
+            counter = 0;
+            for (let i = 0; i<reversed.length; i++) {
+                if (counter < 5) {
+                    if (alphabet.includes(reversed[i])) {
+                        alphabet = alphabet.replace(reversed[i], "");
+                    } else {
+                        alphabet += alphabet;
+                        counter++;
+                    }
+                }
+            }
+            if (reversed.length / 26 > 1) {
+                for (let i = 0; i<Math.floor(reversed.length / 26); i++) {
+                    alphabet += baseAlphabet;
+                }
+            }
+            console.log(alphabet);
+            let newText = "";
+            if (reversed != "") {
+                let x;
+                let y;
+                for (let i = 0; i < reversed.length; i++) {
+                    x = alphabet[randNum(0, alphabet.length)];
+                    y = alphabet[randNum(0, alphabet.length)];
+                    newText += x + y + reversed[i];
+                }
+            }
+            newText = newText.replace(/ /g, "~")
+            output.value = newText;
+        }
+
+        function DecryptFunc(input, output) {
+            newText1 = input.value;
+            
+            let newText = "";
+            let counter = 0;
+            for (let i=0; i < newText1.length; i++) {
+                if (counter == 2) {
+                    newText += newText1[i]
+                    counter = 0;
+                } else {
+                    counter++;
+                }
+            }
+            newText = newText.replace(/~/g, " ")
+            output.value = reversal(newText);
+        }
+
+        document.getElementById("InputID").addEventListener("keydown", function (e) {
+            if (e.code == "Enter") {
+                Execute();
+            }
+        });
+
+        document.body.addEventListener("keydown", function (e) {
+            let input = document.getElementById("InputID");
+            if (input !== document.activeElement && e.code != "Enter") {
+                input.focus()
+                //input.value += e.value;
+            }
+        });
+
+        function ClearSelection() {
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            else if (document.selection) {
+                document.selection.empty();
+            }
+        }
+
+        function CopyToClipboard(input) {
+            try {
+                input.select();
+                input.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(input.value);
+                ClearSelection();
+                return true;
+            } catch (e) {
+                console.log(`An error has occurred: ${e}`);
+                return false;
+            }
+        }
+
+        function EncryptTypeFunc() {
+            button = document.getElementById("EncType");
+            button1 = document.getElementById("ExecButton");
+
+            if (button.innerHTML == "Encrypt Mode") {
+                button.innerHTML = "Decrypt Mode";
+            } else {
+                button.innerHTML = "Encrypt Mode";
+            }
+            if (button.classList.contains('DecButton')) {
+                button.classList.toggle('DecButton')
+                button1.classList.toggle('DecButton')
+            } else {
+                button.classList.add('DecButton')
+                button1.classList.add('DecButton')
+            }
+        }
+
+        function Execute() {
+            output1 = document.getElementById("OutputID");
+            input1 = document.getElementById("InputID");
+            selection = document.getElementById("EncType").innerHTML
+
+            if (selection == "Encrypt Mode") {
+                EncryptFunc(input1, output1);
+                CopyToClipboard(output1)
+            } else if (selection == "Decrypt Mode") {
+                DecryptFunc(input1, output1);
+                CopyToClipboard(output1)
+            } else {
+                output1.value = "Please enter a method...";
+            }
+        }
+    </script>
+</html>
